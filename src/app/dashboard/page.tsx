@@ -9,8 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { NetworkMapWrapper } from "@/components/NetworkMapWrapper";
 import { fetchActiveNetwork } from "@/lib/network/fetch";
+import { fetchLatestRun, fetchRecentRuns } from "@/lib/optimize/fetch-runs";
+import { OptimizationDashboard } from "@/components/OptimizationDashboard";
+import { TrendChart, type TrendPoint } from "@/components/TrendChart";
 
 export default async function DashboardPage() {
   const supabase = createClient();
@@ -28,6 +30,14 @@ export default async function DashboardPage() {
 
   const role = profile?.role ?? "operator";
   const network = await fetchActiveNetwork();
+  const latestRun = await fetchLatestRun();
+  const recentRuns = await fetchRecentRuns(8);
+
+  const trend: TrendPoint[] = recentRuns.map((r, i) => ({
+    run: `Run ${i + 1}`,
+    baseline: Math.round(r.baseline_total_time),
+    optimized: Math.round(r.optimized_total_time),
+  }));
 
   return (
     <div className="min-h-screen bg-muted/30 p-6">
@@ -54,32 +64,35 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Road Network</span>
-              <span className="rounded bg-amber-100 px-2 py-1 text-xs font-normal text-amber-800">
-                Simulated demo data — not live traffic
-              </span>
-            </CardTitle>
-            <CardDescription>
-              {network
-                ? `${network.label} · ${network.nodes.length} intersections, ${network.edges.length} road segments`
-                : "No network generated yet."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {network ? (
-              <NetworkMapWrapper network={network} />
-            ) : (
-              <div className="flex h-[300px] items-center justify-center rounded-lg border bg-background text-sm text-muted-foreground">
+        {!network ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>No network yet</CardTitle>
+              <CardDescription>
                 {role === "admin"
-                  ? "Go to the Admin panel to generate a network."
-                  : "Waiting for an admin to generate a network."}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  ? "Go to the Admin panel to generate a demo network."
+                  : "Waiting for an admin to generate a demo network."}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        ) : (
+          <>
+            <OptimizationDashboard network={network} latestRun={latestRun} />
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Congestion Trend</CardTitle>
+                <CardDescription>
+                  Total network congestion (travel time) across recent runs —
+                  baseline vs optimized.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <TrendChart data={trend} />
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
     </div>
   );

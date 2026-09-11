@@ -13,7 +13,6 @@ export async function POST() {
     return NextResponse.json({ error: "Not logged in" }, { status: 401 });
   }
 
-  // Load the active network.
   const { data: network } = await supabase
     .from("networks")
     .select("id, label, grid_size, nodes, edges")
@@ -24,16 +23,17 @@ export async function POST() {
     return NextResponse.json({ error: "No network exists yet" }, { status: 400 });
   }
 
-  // Generate demand for this network's preset.
+  // Fresh demand per run: seed varies each run so the trend chart shows
+  // natural day-to-day variation. Within THIS run, baseline and optimized
+  // use this exact same vehicle set — a fair same-traffic comparison.
+  const demandSeed = Math.floor(Math.random() * 1_000_000);
   const vehicleCount = vehicleCountForLabel(network.label);
-  const vehicles = generateVehicles(network.nodes, vehicleCount);
+  const vehicles = generateVehicles(network.nodes, vehicleCount, demandSeed);
 
-  // Run baseline + optimizer.
   const result = optimize(network.nodes, network.edges, vehicles, {
     iterations: 8000,
   });
 
-  // Persist: replace this network's vehicles, then save a run.
   const admin = createAdminClient();
 
   await admin.from("vehicles").delete().eq("network_id", network.id);
