@@ -39,7 +39,7 @@ export function generateVehicles(
   const vehicles: Vehicle[] = [];
   const n = nodes.length;
   for (let i = 0; i < count; i++) {
-    let o = Math.floor(rand() * n);
+    const o = Math.floor(rand() * n);
     let d = Math.floor(rand() * n);
     while (d === o) d = Math.floor(rand() * n);
     vehicles.push({ origin: nodes[o].id, destination: nodes[d].id });
