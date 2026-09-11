@@ -1,0 +1,25 @@
+{
+  "mae": 0.06278383370743473,
+  "rmse": 0.07877229806224416,
+  "r2": 0.9019842295909284,
+  "n_rows": 161280,
+  "features": [
+    "segment_id",
+    "seg_popularity",
+    "lag_1",
+    "hour_sin",
+    "hour_cos",
+    "dow_sin",
+    "dow_cos"
+  ],
+  "feature_importances": {
+    "lag_1": 0.6190995573997498,
+    "hour_cos": 0.20652812719345093,
+    "hour_sin": 0.07832786440849304,
+    "dow_sin": 0.050568562000989914,
+    "seg_popularity": 0.04146885499358177,
+    "dow_cos": 0.0021984842605888844,
+    "segment_id": 0.0018085240153595805
+  },
+  "train_seconds": 1.31
+}
