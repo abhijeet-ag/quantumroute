@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { HeatNetworkMapWrapper } from "@/components/HeatNetworkMapWrapper";
+import { DualHeatMap } from "@/components/DualHeatMap";
 import type { HeatNetworkData } from "@/components/HeatNetworkMap";
 
 type Run = {
@@ -32,6 +33,7 @@ export function OptimizationDashboard({
   latestRun: Run | null;
 }) {
   const router = useRouter();
+  const [layout, setLayout] = useState<"single" | "split">("split");
   const [view, setView] = useState<"baseline" | "optimized">("optimized");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +53,7 @@ export function OptimizationDashboard({
     }
   }
 
-  const routes = latestRun
+  const singleRoutes = latestRun
     ? view === "baseline"
       ? latestRun.baseline_routes
       : latestRun.optimized_routes
@@ -102,19 +104,37 @@ export function OptimizationDashboard({
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+              <CardTitle className="flex flex-wrap items-center justify-between gap-2">
                 <span>Congestion Map</span>
-                <Tabs value={view} onValueChange={(v) => setView(v as "baseline" | "optimized")}>
-                  <TabsList>
-                    <TabsTrigger value="baseline">Baseline</TabsTrigger>
-                    <TabsTrigger value="optimized">Optimized</TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                <div className="flex items-center gap-2">
+                  <Tabs value={layout} onValueChange={(v) => setLayout(v as "single" | "split")}>
+                    <TabsList>
+                      <TabsTrigger value="split">Side by side</TabsTrigger>
+                      <TabsTrigger value="single">Single</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                  {layout === "single" && (
+                    <Tabs value={view} onValueChange={(v) => setView(v as "baseline" | "optimized")}>
+                      <TabsList>
+                        <TabsTrigger value="baseline">Baseline</TabsTrigger>
+                        <TabsTrigger value="optimized">Optimized</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  )}
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <HeatNetworkMapWrapper network={network} routes={routes} />
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              {layout === "split" ? (
+                <DualHeatMap
+                  network={network}
+                  baselineRoutes={latestRun.baseline_routes}
+                  optimizedRoutes={latestRun.optimized_routes}
+                />
+              ) : (
+                <HeatNetworkMapWrapper network={network} routes={singleRoutes} />
+              )}
+              <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <span className="inline-block h-3 w-3 rounded-sm" style={{ background: "#22c55e" }} />
                   Free-flowing

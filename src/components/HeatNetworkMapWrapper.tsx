@@ -15,9 +15,11 @@ const HeatNetworkMap = dynamic(() => import("./HeatNetworkMap"), {
 export function HeatNetworkMapWrapper({
   network,
   routes,
+  height,
 }: {
   network: HeatNetworkData;
   routes: number[][] | null;
+  height?: number;
 }) {
-  return <HeatNetworkMap network={network} routes={routes} />;
+  return <HeatNetworkMap network={network} routes={routes} height={height} />;
 }
