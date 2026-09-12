@@ -16,10 +16,28 @@ export function HeatNetworkMapWrapper({
   network,
   routes,
   height,
+  spotlight,
+  selectedSource,
+  selectedDest,
+  onNodeClick,
 }: {
   network: HeatNetworkData;
   routes: number[][] | null;
   height?: number;
+  spotlight?: boolean;
+  selectedSource?: number | null;
+  selectedDest?: number | null;
+  onNodeClick?: (nodeId: number) => void;
 }) {
-  return <HeatNetworkMap network={network} routes={routes} height={height} />;
+  return (
+    <HeatNetworkMap
+      network={network}
+      routes={routes}
+      height={height}
+      spotlight={spotlight}
+      selectedSource={selectedSource}
+      selectedDest={selectedDest}
+      onNodeClick={onNodeClick}
+    />
+  );
 }

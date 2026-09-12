@@ -1,6 +1,6 @@
 "use client";
 
-import { MapContainer, TileLayer, CircleMarker, Polyline } from "react-leaflet";
+import { MapContainer, TileLayer, CircleMarker, Polyline, Tooltip } from "react-leaflet";
 
 type NetworkNode = { id: number; lat: number; lng: number };
 type NetworkEdge = { from: number; to: number; weight: number };
@@ -40,12 +40,21 @@ export default function HeatNetworkMap({
   network,
   routes,
   height = 500,
+  spotlight = false,
+  selectedSource = null,
+  selectedDest = null,
+  onNodeClick,
 }: {
   network: HeatNetworkData;
   routes: number[][] | null;
   height?: number;
+  spotlight?: boolean;
+  selectedSource?: number | null;
+  selectedDest?: number | null;
+  onNodeClick?: (nodeId: number) => void;
 }) {
   const nodeById = new Map(network.nodes.map((n) => [n.id, n]));
+  // In spotlight mode, dim the congestion colors so highlighted paths pop.
   const loads = routes ? computeLoads(routes) : new Map<string, number>();
 
   const avgLat =
@@ -79,19 +88,39 @@ export default function HeatNetworkMap({
             pathOptions={{
               color: routes ? loadColor(load) : "#64748b",
               weight: routes && load > 0 ? 3 + Math.min(load, 8) : 3,
-              opacity: 0.8,
+              opacity: spotlight ? 0.25 : 0.8,
             }}
           />
         );
       })}
-      {network.nodes.map((n) => (
-        <CircleMarker
-          key={n.id}
-          center={[n.lat, n.lng]}
-          radius={4}
-          pathOptions={{ color: "#0f172a", fillColor: "#0f172a", fillOpacity: 1 }}
-        />
-      ))}
+      {network.nodes.map((n) => {
+        const isSource = n.id === selectedSource;
+        const isDest = n.id === selectedDest;
+        const special = isSource || isDest;
+        return (
+          <CircleMarker
+            key={n.id}
+            center={[n.lat, n.lng]}
+            radius={special ? 9 : spotlight ? 5 : 4}
+            pathOptions={{
+              color: isSource ? "#2563eb" : isDest ? "#dc2626" : "#0f172a",
+              fillColor: isSource ? "#2563eb" : isDest ? "#dc2626" : "#0f172a",
+              fillOpacity: 1,
+            }}
+            eventHandlers={
+              spotlight && onNodeClick
+                ? { click: () => onNodeClick(n.id) }
+                : undefined
+            }
+          >
+            {special && (
+              <Tooltip permanent direction="top">
+                {isSource ? "Source" : "Destination"}
+              </Tooltip>
+            )}
+          </CircleMarker>
+        );
+      })}
     </MapContainer>
   );
 }

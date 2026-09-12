@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { HeatNetworkMapWrapper } from "@/components/HeatNetworkMapWrapper";
 import { DualHeatMap } from "@/components/DualHeatMap";
+import { JourneySpotlight } from "@/components/JourneySpotlight";
 import type { HeatNetworkData } from "@/components/HeatNetworkMap";
 
 type Run = {
@@ -33,7 +34,7 @@ export function OptimizationDashboard({
   latestRun: Run | null;
 }) {
   const router = useRouter();
-  const [layout, setLayout] = useState<"single" | "split">("split");
+  const [layout, setLayout] = useState<"single" | "split" | "spotlight">("split");
   const [view, setView] = useState<"baseline" | "optimized">("optimized");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -107,10 +108,11 @@ export function OptimizationDashboard({
               <CardTitle className="flex flex-wrap items-center justify-between gap-2">
                 <span>Congestion Map</span>
                 <div className="flex items-center gap-2">
-                  <Tabs value={layout} onValueChange={(v) => setLayout(v as "single" | "split")}>
+                  <Tabs value={layout} onValueChange={(v) => setLayout(v as "single" | "split" | "spotlight")}>
                     <TabsList>
                       <TabsTrigger value="split">Side by side</TabsTrigger>
                       <TabsTrigger value="single">Single</TabsTrigger>
+                      <TabsTrigger value="spotlight">Spotlight</TabsTrigger>
                     </TabsList>
                   </Tabs>
                   {layout === "single" && (
@@ -125,7 +127,9 @@ export function OptimizationDashboard({
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {layout === "split" ? (
+              {layout === "spotlight" ? (
+                <JourneySpotlight network={network} run={latestRun} />
+              ) : layout === "split" ? (
                 <DualHeatMap
                   network={network}
                   baselineRoutes={latestRun.baseline_routes}
@@ -134,23 +138,23 @@ export function OptimizationDashboard({
               ) : (
                 <HeatNetworkMapWrapper network={network} routes={singleRoutes} />
               )}
-              <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <span className="inline-block h-3 w-3 rounded-sm" style={{ background: "#22c55e" }} />
-                  Free-flowing
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="inline-block h-3 w-3 rounded-sm" style={{ background: "#eab308" }} />
-                  Busy
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="inline-block h-3 w-3 rounded-sm" style={{ background: "#ef4444" }} />
-                  Congested
-                </span>
-                <span className="ml-auto">
-                  Thicker + redder = more vehicles on that segment
-                </span>
-              </div>
+              {layout !== "spotlight" && (
+                <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block h-3 w-3 rounded-sm" style={{ background: "#22c55e" }} />
+                    Free-flowing
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block h-3 w-3 rounded-sm" style={{ background: "#eab308" }} />
+                    Busy
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block h-3 w-3 rounded-sm" style={{ background: "#ef4444" }} />
+                    Congested
+                  </span>
+                  <span className="ml-auto">Thicker + redder = more vehicles on that segment</span>
+                </div>
+              )}
             </CardContent>
           </Card>
         </>
