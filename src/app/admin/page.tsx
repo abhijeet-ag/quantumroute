@@ -10,8 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { GenerateNetworkControl } from "@/components/GenerateNetworkControl";
+import { NetworkSelector } from "@/components/NetworkSelector";
 import { NetworkMapWrapper } from "@/components/NetworkMapWrapper";
-import { fetchActiveNetwork } from "@/lib/network/fetch";
+import { fetchActiveNetwork, listNetworks } from "@/lib/network/fetch";
 
 export default async function AdminPage() {
   const supabase = createClient();
@@ -29,6 +30,7 @@ export default async function AdminPage() {
   if (profile?.role !== "admin") redirect("/dashboard");
 
   const network = await fetchActiveNetwork();
+  const networks = await listNetworks();
 
   return (
     <div className="min-h-screen bg-muted/30 p-6">
@@ -42,34 +44,38 @@ export default async function AdminPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Demo Network</CardTitle>
+            <CardTitle>Active Network</CardTitle>
             <CardDescription>
-              Generate a synthetic road network. This replaces any existing
-              network and clears its old traffic and runs.
+              Choose which network the dashboard uses. The real OSM network and
+              any generated grid are both available.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
+            <NetworkSelector networks={networks} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Generate Synthetic Network</CardTitle>
+            <CardDescription>
+              Generate a synthetic grid. This replaces any existing grid and
+              becomes active. The real OSM network is preserved.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
             <GenerateNetworkControl />
-            <div className="rounded-md border bg-background p-3 text-sm">
-              {network ? (
-                <>
-                  <span className="font-medium">Active network:</span>{" "}
-                  {network.label} · {network.nodes.length} intersections,{" "}
-                  {network.edges.length} segments
-                </>
-              ) : (
-                <span className="text-muted-foreground">
-                  No network yet — generate one above.
-                </span>
-              )}
-            </div>
           </CardContent>
         </Card>
 
         {network && (
           <Card>
             <CardHeader>
-              <CardTitle>Network Preview</CardTitle>
+              <CardTitle>Active Network Preview</CardTitle>
+              <CardDescription>
+                {network.label} · {network.nodes.length} intersections,{" "}
+                {network.edges.length} segments
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <NetworkMapWrapper network={network} />

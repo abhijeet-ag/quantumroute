@@ -4,7 +4,6 @@ import { generateNetwork, PRESETS, type PresetKey } from "@/lib/network/generate
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  // 1. Who is calling? (uses the session cookie)
   const supabase = createClient();
   const {
     data: { user },
@@ -13,7 +12,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not logged in" }, { status: 401 });
   }
 
-  // 2. Are they an admin? Read their role (RLS lets a user read their own row).
   const { data: profile } = await supabase
     .from("profiles")
     .select("role")
@@ -23,7 +21,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Admins only" }, { status: 403 });
   }
 
-  // 3. Which preset?
   let body: { preset?: string };
   try {
     body = await request.json();
@@ -35,24 +32,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unknown preset" }, { status: 400 });
   }
   const preset = PRESETS[presetKey];
-
-  // 4. Build the network (pure function).
   const network = generateNetwork(preset.gridSize);
-
-  // 5. Save it with the admin client. We keep ONE demo network at a time:
-  //    delete existing networks first, then insert the new one.
   const admin = createAdminClient();
 
+  // Delete existing SYNTHETIC networks only (grid_size > 0). The OSM network
+  // (grid_size = 0) is preserved so the admin can switch back to it.
   const { error: delError } = await admin
     .from("networks")
     .delete()
-    .neq("id", "00000000-0000-0000-0000-000000000000"); // delete all rows
+    .gt("grid_size", 0);
   if (delError) {
     return NextResponse.json(
-      { error: "Failed clearing old network: " + delError.message },
+      { error: "Failed clearing old grid: " + delError.message },
       { status: 500 }
     );
   }
+
+  // New network becomes active: clear others' flag, insert this one as active.
+  await admin
+    .from("networks")
+    .update({ is_active: false })
+    .neq("id", "00000000-0000-0000-0000-000000000000");
 
   const { data: inserted, error: insError } = await admin
     .from("networks")
@@ -62,6 +62,7 @@ export async function POST(request: Request) {
       nodes: network.nodes,
       edges: network.edges,
       created_by: user.id,
+      is_active: true,
     })
     .select()
     .single();
