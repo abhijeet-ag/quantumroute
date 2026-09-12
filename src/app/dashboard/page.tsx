@@ -2,13 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { AppHeader } from "@/components/AppHeader";
 import { fetchActiveNetwork } from "@/lib/network/fetch";
 import { fetchLatestRun, fetchRecentRuns } from "@/lib/optimize/fetch-runs";
 import { OptimizationDashboard } from "@/components/OptimizationDashboard";
@@ -40,60 +34,69 @@ export default async function DashboardPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-muted/30 p-6">
-      <div className="mx-auto max-w-5xl space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">QuantumRoute Dashboard</h1>
-            <p className="text-sm text-muted-foreground">
-              Signed in as {profile?.email ?? user.email} ·{" "}
-              <span className="font-medium capitalize">{role}</span>
-            </p>
-          </div>
+    <div className="min-h-screen bg-slate-950 text-slate-200">
+      <AppHeader
+        email={profile?.email ?? user.email}
+        role={role}
+        right={
           <div className="flex gap-2">
             {role === "admin" && (
-              <Button asChild variant="secondary">
-                <Link href="/admin">Admin panel</Link>
+              <Button asChild variant="secondary" size="sm">
+                <Link href="/admin">Admin</Link>
               </Button>
             )}
             <form action="/auth/signout" method="post">
-              <Button variant="outline" type="submit">
+              <Button variant="outline" size="sm" type="submit">
                 Sign out
               </Button>
             </form>
           </div>
+        }
+      />
+
+      <main className="mx-auto max-w-6xl space-y-6 p-6">
+        <div className="rounded-xl border border-slate-800 bg-gradient-to-r from-slate-900 to-slate-950 p-6">
+          <h1 className="text-2xl font-bold text-slate-100">
+            Coordinated city routing, not one car at a time
+          </h1>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-400">
+            Standard navigation optimizes each vehicle&apos;s route independently, so
+            everyone crowds the same roads. QuantumRoute routes all vehicles{" "}
+            <span className="font-medium text-cyan-400">jointly</span> using a
+            quantum-inspired metaheuristic, cutting total network congestion. Compare
+            baseline vs optimized below.
+          </p>
         </div>
 
         {!network ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>No network yet</CardTitle>
-              <CardDescription>
-                {role === "admin"
-                  ? "Go to the Admin panel to generate a demo network."
-                  : "Waiting for an admin to generate a demo network."}
-              </CardDescription>
-            </CardHeader>
-          </Card>
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+            <h2 className="font-semibold text-slate-100">No network yet</h2>
+            <p className="mt-1 text-sm text-slate-400">
+              {role === "admin"
+                ? "Go to the Admin panel to generate or select a network."
+                : "Waiting for an admin to select a network."}
+            </p>
+          </div>
         ) : (
           <>
+            <div className="font-mono text-sm text-slate-400">
+              <span className="text-slate-500">active_network:</span>{" "}
+              <span className="text-slate-200">{network.label}</span> ·{" "}
+              {network.nodes.length} intersections, {network.edges.length} segments
+            </div>
+
             <OptimizationDashboard network={network} latestRun={latestRun} />
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Congestion Trend</CardTitle>
-                <CardDescription>
-                  Total network congestion (travel time) across recent runs —
-                  baseline vs optimized.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <TrendChart data={trend} />
-              </CardContent>
-            </Card>
+            <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+              <h2 className="font-semibold text-slate-100">Congestion Trend</h2>
+              <p className="mb-3 text-sm text-slate-400">
+                Total network congestion across recent runs — baseline vs optimized.
+              </p>
+              <TrendChart data={trend} />
+            </div>
           </>
         )}
-      </div>
+      </main>
     </div>
   );
 }
