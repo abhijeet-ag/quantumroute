@@ -24,8 +24,8 @@ export default async function DashboardPage() {
 
   const role = profile?.role ?? "operator";
   const network = await fetchActiveNetwork();
-  const latestRun = await fetchLatestRun();
-  const recentRuns = await fetchRecentRuns(8);
+  const latestRun = await fetchLatestRun(network?.id);
+  const recentRuns = await fetchRecentRuns(network?.id, 8);
 
   const trend: TrendPoint[] = recentRuns.map((r, i) => ({
     run: `Run ${i + 1}`,

@@ -6,6 +6,7 @@ type NetworkNode = { id: number; lat: number; lng: number };
 type NetworkEdge = { from: number; to: number; weight: number };
 
 export type NetworkData = {
+  id?: string;
   label: string;
   grid_size: number;
   nodes: NetworkNode[];

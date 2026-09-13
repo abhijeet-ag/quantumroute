@@ -91,6 +91,7 @@ export function highestImpactTradeoffs(
     const ot = pathTime(o, edges);
     const delta = ot - bt;
     if (delta <= 0.01) continue; // only journeys that got individually longer
+    if (bt <= 0) continue; // skip malformed/zero-length baseline (no valid ratio)
     results.push({
       vehicleIndex: i,
       origin: b[0],

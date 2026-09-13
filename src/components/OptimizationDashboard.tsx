@@ -89,13 +89,17 @@ export function OptimizationDashboard({
             <MetricCard
               label="Total travel time saved"
               value={latestRun.time_saved.toFixed(0)}
-              sub={`of ${latestRun.baseline_total_time.toFixed(0)} baseline`}
+              sub={`of ${latestRun.baseline_total_time.toFixed(0)} baseline · rel. units`}
             />
             <MetricCard
               label="Vehicles rerouted"
               value={`${latestRun.vehicles_rerouted} / ${latestRun.vehicle_count}`}
             />
           </div>
+          <p className="font-mono text-[11px] text-slate-500">
+            Travel-time figures are in relative units (normalized edge weights),
+            not calibrated minutes. Congestion reduction is a ratio and unit-independent.
+          </p>
 
           <div className="rounded-xl border border-slate-800 bg-slate-900">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 p-4">

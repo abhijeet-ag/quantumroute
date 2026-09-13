@@ -6,7 +6,7 @@ export async function fetchActiveNetwork(): Promise<NetworkData | null> {
   const supabase = createClient();
   const { data } = await supabase
     .from("networks")
-    .select("label, grid_size, nodes, edges")
+    .select("id, label, grid_size, nodes, edges")
     .eq("is_active", true)
     .limit(1)
     .maybeSingle();

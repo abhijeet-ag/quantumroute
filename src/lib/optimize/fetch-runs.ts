@@ -14,25 +14,20 @@ export type RunRow = {
 };
 
 // The most recent run (for the map + metric panel), or null.
-export async function fetchLatestRun(): Promise<RunRow | null> {
+export async function fetchLatestRun(networkId?: string): Promise<RunRow | null> {
   const supabase = createClient();
-  const { data } = await supabase
-    .from("runs")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  let q = supabase.from("runs").select("*");
+  if (networkId) q = q.eq("network_id", networkId);
+  const { data } = await q.order("created_at", { ascending: false }).limit(1).maybeSingle();
   return (data as RunRow) ?? null;
 }
 
 // Recent runs for the trend chart (oldest→newest of the last N).
-export async function fetchRecentRuns(limit = 8): Promise<RunRow[]> {
+export async function fetchRecentRuns(networkId?: string, limit = 8): Promise<RunRow[]> {
   const supabase = createClient();
-  const { data } = await supabase
-    .from("runs")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(limit);
+  let q = supabase.from("runs").select("*");
+  if (networkId) q = q.eq("network_id", networkId);
+  const { data } = await q.order("created_at", { ascending: false }).limit(limit);
   const rows = (data as RunRow[]) ?? [];
   return rows.reverse();
 }

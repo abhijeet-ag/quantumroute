@@ -79,11 +79,11 @@ export function JourneySpotlight({
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div>
-                  <div className="text-xs text-slate-400">Baseline time</div>
+                  <div className="text-xs text-slate-400">Baseline (rel. units)</div>
                   <div className="font-mono text-lg font-bold text-red-400">{baselineTime.toFixed(1)}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-400">Optimized time</div>
+                  <div className="text-xs text-slate-400">Optimized (rel. units)</div>
                   <div className="font-mono text-lg font-bold text-cyan-400">{optimizedTime.toFixed(1)}</div>
                 </div>
               </div>
