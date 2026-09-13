@@ -41,12 +41,12 @@ export default async function DashboardPage() {
         right={
           <div className="flex gap-2">
             {role === "admin" && (
-              <Button asChild variant="secondary" size="sm">
+              <Button asChild size="sm" className="bg-slate-800 text-slate-100 hover:bg-slate-700">
                 <Link href="/admin">Admin</Link>
               </Button>
             )}
             <form action="/auth/signout" method="post">
-              <Button variant="outline" size="sm" type="submit">
+              <Button size="sm" type="submit" className="border border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-slate-100">
                 Sign out
               </Button>
             </form>

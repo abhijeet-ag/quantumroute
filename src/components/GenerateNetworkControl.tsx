@@ -41,7 +41,7 @@ export function GenerateNetworkControl() {
         setMessage(
           `Network generated: ${data.network.label} (${data.network.grid_size}×${data.network.grid_size}).`
         );
-        router.refresh(); // re-render server components (map picks up new network)
+        router.refresh();
       }
     } catch (e) {
       setError("Request failed: " + (e as Error).message);
@@ -54,23 +54,31 @@ export function GenerateNetworkControl() {
     <div className="space-y-3">
       <div className="flex items-center gap-3">
         <Select value={preset} onValueChange={setPreset}>
-          <SelectTrigger className="w-64">
+          <SelectTrigger className="w-64 border-slate-700 bg-slate-950 text-slate-100">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
             {PRESET_OPTIONS.map((o) => (
-              <SelectItem key={o.key} value={o.key}>
+              <SelectItem
+                key={o.key}
+                value={o.key}
+                className="text-slate-100 focus:bg-slate-800 focus:text-slate-100"
+              >
                 {o.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <Button onClick={handleGenerate} disabled={loading}>
+        <Button
+          onClick={handleGenerate}
+          disabled={loading}
+          className="bg-cyan-500 text-slate-950 hover:bg-cyan-400"
+        >
           {loading ? "Generating…" : "Generate Network"}
         </Button>
       </div>
-      {message && <p className="text-sm text-green-600">{message}</p>}
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {message && <p className="text-sm text-cyan-400">{message}</p>}
+      {error && <p className="text-sm text-red-400">{error}</p>}
     </div>
   );
 }

@@ -31,6 +31,13 @@ export default function SpotlightMap({
       .filter((n): n is NonNullable<typeof n> => !!n)
       .map((n) => [n.lat, n.lng] as [number, number]);
 
+  const baselineCoords = baselinePath ? toLatLng(baselinePath) : [];
+  const optimizedCoords = optimizedPath ? toLatLng(optimizedPath) : [];
+  // Keys change whenever the path changes, forcing Leaflet to redraw the line
+  // instead of keeping a stale one.
+  const baselineKey = baselinePath ? "b-" + baselinePath.join("-") : "b-none";
+  const optimizedKey = optimizedPath ? "o-" + optimizedPath.join("-") : "o-none";
+
   return (
     <MapContainer
       center={[avgLat, avgLng]}
@@ -56,18 +63,20 @@ export default function SpotlightMap({
         );
       })}
 
-      {/* Baseline path (red) */}
-      {baselinePath && (
+      {/* Baseline path (red) — keyed so it always redraws for the current journey */}
+      {baselineCoords.length > 1 && (
         <Polyline
-          positions={toLatLng(baselinePath)}
-          pathOptions={{ color: "#dc2626", weight: 5, opacity: 0.85 }}
+          key={baselineKey}
+          positions={baselineCoords}
+          pathOptions={{ color: "#dc2626", weight: 6, opacity: 0.9 }}
         />
       )}
       {/* Optimized path (green), drawn on top */}
-      {optimizedPath && (
+      {optimizedCoords.length > 1 && (
         <Polyline
-          positions={toLatLng(optimizedPath)}
-          pathOptions={{ color: "#16a34a", weight: 5, opacity: 0.85, dashArray: "1 0" }}
+          key={optimizedKey}
+          positions={optimizedCoords}
+          pathOptions={{ color: "#16a34a", weight: 4, opacity: 0.95 }}
         />
       )}
 
