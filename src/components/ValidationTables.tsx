@@ -104,8 +104,6 @@ export function ValidationTables({
         edges={edges}
         baselineRoutes={baselineRoutes}
         optimizedRoutes={optimizedRoutes}
-        allCheapestTotal={base.total}
-        optimizerTotal={opt.total}
       />
     </div>
   );
