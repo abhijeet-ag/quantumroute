@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/AppHeader";
 import { fetchActiveNetwork } from "@/lib/network/fetch";
 import { fetchLatestRun, fetchRecentRuns } from "@/lib/optimize/fetch-runs";
+import { fetchPredictions } from "@/lib/optimize/fetch-predictions";
 import { OptimizationDashboard } from "@/components/OptimizationDashboard";
 import { TrendChart, type TrendPoint } from "@/components/TrendChart";
 
@@ -26,6 +27,7 @@ export default async function DashboardPage() {
   const network = await fetchActiveNetwork();
   const latestRun = await fetchLatestRun(network?.id);
   const recentRuns = await fetchRecentRuns(network?.id, 8);
+  const predictions = await fetchPredictions(network?.id);
 
   const trend: TrendPoint[] = recentRuns.map((r, i) => ({
     run: `Run ${i + 1}`,
@@ -85,7 +87,7 @@ export default async function DashboardPage() {
               {network.nodes.length} intersections, {network.edges.length} segments
             </div>
 
-            <OptimizationDashboard network={network} latestRun={latestRun} />
+            <OptimizationDashboard network={network} latestRun={latestRun} predictions={predictions} />
 
             <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
               <h2 className="font-semibold text-slate-100">Congestion Trend</h2>

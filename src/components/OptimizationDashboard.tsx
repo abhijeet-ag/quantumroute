@@ -7,6 +7,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HeatNetworkMapWrapper } from "@/components/HeatNetworkMapWrapper";
 import { DualHeatMap } from "@/components/DualHeatMap";
 import { JourneySpotlight } from "@/components/JourneySpotlight";
+import { ForecastPanel } from "@/components/ForecastPanel";
+import type { PredictionData } from "@/lib/optimize/fetch-predictions";
 import type { HeatNetworkData } from "@/components/HeatNetworkMap";
 
 type Run = {
@@ -23,12 +25,14 @@ type Run = {
 export function OptimizationDashboard({
   network,
   latestRun,
+  predictions,
 }: {
   network: HeatNetworkData;
   latestRun: Run | null;
+  predictions: PredictionData | null;
 }) {
   const router = useRouter();
-  const [layout, setLayout] = useState<"single" | "split" | "spotlight">("split");
+  const [layout, setLayout] = useState<"single" | "split" | "spotlight" | "forecast">("split");
   const [view, setView] = useState<"baseline" | "optimized">("optimized");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,11 +109,12 @@ export function OptimizationDashboard({
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 p-4">
               <h2 className="font-semibold text-slate-100">Congestion Map</h2>
               <div className="flex items-center gap-2">
-                <Tabs value={layout} onValueChange={(v) => setLayout(v as "single" | "split" | "spotlight")}>
+                <Tabs value={layout} onValueChange={(v) => setLayout(v as "single" | "split" | "spotlight" | "forecast")}>
                   <TabsList>
                     <TabsTrigger value="split">Side by side</TabsTrigger>
                     <TabsTrigger value="single">Single</TabsTrigger>
                     <TabsTrigger value="spotlight">Spotlight</TabsTrigger>
+                    <TabsTrigger value="forecast">Forecast</TabsTrigger>
                   </TabsList>
                 </Tabs>
                 {layout === "single" && (
@@ -123,7 +128,9 @@ export function OptimizationDashboard({
               </div>
             </div>
             <div className="space-y-3 p-4">
-              {layout === "spotlight" ? (
+              {layout === "forecast" ? (
+                <ForecastPanel network={network} predictions={predictions} />
+              ) : layout === "spotlight" ? (
                 <JourneySpotlight network={network} run={latestRun} />
               ) : layout === "split" ? (
                 <DualHeatMap
