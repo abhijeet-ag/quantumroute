@@ -24,12 +24,6 @@ export default async function ValidationPage() {
       <AppHeader
         email={profile?.email ?? user.email}
         role={profile?.role}
-        right={
-          <Link href="/dashboard"
-            className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-slate-200 hover:bg-slate-800">
-            Back to dashboard
-          </Link>
-        }
       />
       <main className="mx-auto max-w-6xl space-y-6 p-6">
         <div className="rounded-xl border border-slate-800 bg-gradient-to-r from-slate-900 to-slate-950 p-6">
