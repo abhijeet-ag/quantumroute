@@ -29,14 +29,9 @@ export function AppHeader({
           <HeaderNav />
         </div>
         <div className="flex items-center gap-3">
-          {email && (
-            <span className="hidden text-sm text-slate-400 sm:inline">
-              {email}
-              {role && (
-                <span className="ml-1.5 rounded bg-slate-800 px-1.5 py-0.5 font-mono text-xs font-medium capitalize text-cyan-400">
-                  {role}
-                </span>
-              )}
+          {role && (
+            <span className="hidden rounded bg-slate-800 px-2 py-0.5 font-mono text-xs font-medium capitalize text-cyan-400 sm:inline">
+              {role}
             </span>
           )}
           {right}

@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -9,7 +10,10 @@ import { fetchPredictions } from "@/lib/optimize/fetch-predictions";
 import { OptimizationDashboard } from "@/components/OptimizationDashboard";
 import { TrendChart, type TrendPoint } from "@/components/TrendChart";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
+  noStore();
   const supabase = createClient();
 
   const {
@@ -87,6 +91,7 @@ export default async function DashboardPage() {
               {network.nodes.length} intersections, {network.edges.length} segments
             </div>
 
+            <div style={{background:"#f00",color:"#fff",padding:"8px",fontFamily:"monospace"}}>DEBUG server-fetched latestRun: {latestRun?.congestion_reduction?.toFixed(1)}% · id={latestRun?.id?.slice(0,8)} · {new Date().toISOString()}</div>
             <OptimizationDashboard network={network} latestRun={latestRun} predictions={predictions} />
 
             <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">

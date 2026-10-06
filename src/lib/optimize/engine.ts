@@ -89,7 +89,7 @@ export function optimize(
   vehicles: Vehicle[],
   opts: { K?: number; iterations?: number; seed?: number; cooling?: number } = {}
 ): OptimizeResult {
-  const K = opts.K ?? 3;
+  const K = opts.K ?? 8;
   const iterations = opts.iterations ?? 8000;
   const seed = opts.seed ?? 123;
   const cooling = opts.cooling ?? 0.9995;

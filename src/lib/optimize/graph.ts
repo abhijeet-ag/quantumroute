@@ -75,7 +75,7 @@ export function kShortestPaths(
   adj: Adj,
   source: number,
   target: number,
-  K = 3
+  K = 8
 ): PathResult[] {
   const first = dijkstra(adj, source, target);
   if (!first) return [];

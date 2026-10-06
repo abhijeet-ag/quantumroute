@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from "next/cache";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -6,7 +7,10 @@ import { fetchActiveNetwork } from "@/lib/network/fetch";
 import { fetchLatestRun } from "@/lib/optimize/fetch-runs";
 import { ValidationTables } from "@/components/ValidationTables";
 
+export const dynamic = "force-dynamic";
+
 export default async function ValidationPage() {
+  noStore();
   const supabase = createClient();
   const {
     data: { user },

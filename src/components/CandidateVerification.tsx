@@ -41,7 +41,7 @@ export function CandidateVerification({
       const opt = optimizedRoutes[vi];
       const src = b[0];
       const dst = b[b.length - 1];
-      const cands = kShortestPaths(adj, src, dst, 3).map((c) => ({
+      const cands = kShortestPaths(adj, src, dst, 8).map((c) => ({
         path: c.path,
         cost: freeFlow(c.path, edges),
       }));

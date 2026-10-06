@@ -8,6 +8,7 @@ const ITEMS = [
   { href: "/validation", label: "Validation" },
   { href: "/benchmark", label: "Benchmark" },
   { href: "/equilibrium", label: "Equilibrium" },
+  { href: "/exact", label: "Exact" },
 ];
 
 export function HeaderNav() {
